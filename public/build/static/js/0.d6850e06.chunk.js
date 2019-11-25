@@ -1,0 +1,1 @@
+(this["webpackJsonpmy-app"]=this["webpackJsonpmy-app"]||[]).push([[0],{385:function(e,n,t){"use strict";t.r(n);var a=t(0),r=t.n(a),o=t(4),p=t.n(o),u=t(156);it("renders without crashing",(function(){var e=document.createElement("div");p.a.render(r.a.createElement(u.default,null),e),p.a.unmountComponentAtNode(e)}))}}]);
