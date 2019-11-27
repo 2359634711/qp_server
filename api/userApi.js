@@ -1,7 +1,7 @@
 const query = require('../api/db')
 function _select_all_user() {
     return new Promise((resolve) => {
-        query(`SELECT user_list.id, user_list.user,card_list.id as card_id, card_list.title as card_title, user_list.create_time, user_list.reply, user_list.status, user_list.input_list
+        query(`SELECT user_list.id, user_list.user, user_list.o_user,card_list.id as card_id, card_list.title as card_title, user_list.create_time, user_list.reply, user_list.status, user_list.input_list
         FROM user_list, card_list
         WHERE user_list.card_id = card_list.id ORDER BY user_list.id DESC`, (err, response) => {
                 resolve({
@@ -13,7 +13,7 @@ function _select_all_user() {
 }
 function _select_user_from_status(status, limit = 1000) {
     return new Promise((resolve) => {
-        query(`SELECT user_list.id, user_list.user,card_list.id as card_id, card_list.title as card_title, user_list.create_time, user_list.reply, user_list.status, user_list.input_list
+        query(`SELECT user_list.id, user_list.user, user_list.o_user,card_list.id as card_id, card_list.title as card_title, user_list.create_time, user_list.reply, user_list.status, user_list.input_list
         FROM user_list, card_list
         WHERE user_list.card_id = card_list.id and status=?
         ORDER BY user_list.id DESC
@@ -28,7 +28,7 @@ function _select_user_from_status(status, limit = 1000) {
 }
 function _select_user_from_user(user) {
     return new Promise((resolve) => {
-        query(`SELECT user_list.id, user_list.user,card_list.id as card_id, card_list.title as card_title, user_list.create_time, user_list.reply, user_list.status, user_list.input_list
+        query(`SELECT user_list.id, user_list.user, user_list.o_user,card_list.id as card_id, card_list.title as card_title, user_list.create_time, user_list.reply, user_list.status, user_list.input_list
         FROM user_list, card_list
         WHERE user_list.card_id = card_list.id AND user=?
         ORDER BY user_list.id DESC`, [user], (err, response) => {
@@ -65,9 +65,9 @@ function _insert_user(obj) {
 }
 function _update_status_from_id(obj) {
     return new Promise((resolve) => {
-        let { status, id } = obj;
-        query("UPDATE `user_list` SET `status`=? WHERE (`id`=?)",
-            [status, id], (err, response) => {
+        let { status, id,o_user } = obj;
+        query("UPDATE `user_list` SET `status`=?, `o_user`=? WHERE (`id`=?)",
+            [status, o_user, id], (err, response) => {
                 resolve({
                     err: !!err,
                     data: err ? err : response
@@ -77,9 +77,9 @@ function _update_status_from_id(obj) {
 }
 function _update_reply_from_id(obj) {
     return new Promise((resolve) => {
-        let { reply, id } = obj;
-        query("UPDATE `user_list` SET `reply`=? WHERE (`id`=?)",
-            [reply, id], (err, response) => {
+        let { reply, id , o_user} = obj;
+        query("UPDATE `user_list` SET `reply`=?,`o_user`=? WHERE (`id`=?)",
+            [reply, o_user, id], (err, response) => {
                 resolve({
                     err: !!err,
                     data: err ? err : response
@@ -119,15 +119,14 @@ async function insertUser(req, res) {
 
 async function updateStatus(req, res) {
     try {
-        console.log(req.session.userData)
-        if (!req.session.userData) {
-            res.json({
-                err: true,
-                code: -2,//login fail
-                data: '请重新登录'
-            })
-            return
-        }
+        // if (!req.session.userData) {
+        //     res.json({
+        //         err: true,
+        //         code: -2,//login fail
+        //         data: '请重新登录'
+        //     })
+        //     return
+        // }
         let { err, data } = await _update_status_from_id(req.body);
         res.json({
             err, data
@@ -141,14 +140,14 @@ async function updateStatus(req, res) {
 }
 async function updateReply(req, res) {
     try {
-        if (!req.session.userData) {
-            res.json({
-                err: true,
-                code: -2,//login fail
-                data: '请重新登录'
-            })
-            return
-        }
+        // if (!req.session.userData) {
+        //     res.json({
+        //         err: true,
+        //         code: -2,//login fail
+        //         data: '请重新登录'
+        //     })
+        //     return
+        // }
         let { err, data } = await _update_reply_from_id(req.body);
         res.json({
             err, data

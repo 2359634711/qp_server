@@ -27,13 +27,14 @@ function _select_operator_from_o_id(o_id) {
 function _select_operator_from_o_user(o_user) {
     return new Promise((resolve) => {
         query('SELECT * FROM `operator` where `o_user`=?', [o_user], (err, response) => {
-            resolve({
+    resolve({
                 err: !!err,
                 data: err ? err : response
             })
         })
     })
-}function _select_operator_from_o_user_and_psw(obj) {
+}
+function _select_operator_from_o_user_and_psw(obj) {
     let {o_user, o_psw} = obj;
     return new Promise((resolve) => {
         query('SELECT * FROM `operator` where `o_user`=? and `o_psw`=?', [o_user, o_psw], (err, response) => {
@@ -55,7 +56,7 @@ function _insert_operator(obj) {
             return;
         }
         query("INSERT INTO `operator` (`o_user`, `o_psw`, `o_level`) VALUES (?,?,?)",
-            [o_user,o_psw,o_level], (err, response) => {
+            [o_user,o_psw,o_level||0], (err, response) => {
                 resolve({
                     err: !!err,
                     data: err ? err : response
@@ -87,38 +88,33 @@ function _delete_operator_from_id(o_id) {
     })
 }
 
-// async function update(req, res) {
-//     try {
-//         let { body } = req;
-//         let { o_id } = body;
-//         var err, data;
-//         if (o_id) {
-//             var { err, data } = await _select_operator_from_o_id(o_id);
-//             if (err) throw data
-//             var { err, data } = await _update_operator(body);
-//         } else {
-//             var { err, data } = await _insert_operator(body);
-//         }
-//         res.json({
-//             err, data
-//         })
-//     } catch (e) {
-//         res.json({
-//             err: !!e,
-//             data: e
-//         })
-//     }
-// }
-
 async function update(req, res) {
     try {
         let { body } = req;
-        let { o_id } = body;
+        let { o_id ,o_user,o_psw} = body;
         var err, data;
+        if(!o_user||!o_psw){
+            res.json({
+                err: true,
+                data: '请输入用户名和密码'
+            })
+            return
+        }
         if (o_id) {
+            var { err, data } = await _select_operator_from_o_id(o_id);
+            if (err) throw data
             var { err, data } = await _update_operator(body);
         } else {
-            throw 'operator not found'
+            var { err, data } = await _select_operator_from_o_user(o_user);
+            if (err) {
+                res.json({err: true, data})
+                return
+            }
+            if(data && data.length > 0){
+                res.json({err: true, data:'用户名已存在'})
+                return
+             }
+            var { err, data } = await _insert_operator(body);
         }
         res.json({
             err, data
@@ -130,6 +126,27 @@ async function update(req, res) {
         })
     }
 }
+
+// async function update(req, res) {
+//     try {
+//         let { body } = req;
+//         let { o_id } = body;
+//         var err, data;
+//         if (o_id) {
+//             var { err, data } = await _update_operator(body);
+//         } else {
+//             throw 'operator not found'
+//         }
+//         res.json({
+//             err, data
+//         })
+//     } catch (e) {
+//         res.json({
+//             err: !!e,
+//             data: e
+//         })
+//     }
+// }
 
 async function getList(req, res) {
     try {
@@ -201,7 +218,6 @@ async function login(req,res){
         if(err) throw data;
     if(data&&data.length > 0){
         req.session.userData = data[0];
-        console.log(req.session.userData)
         res.json({
             err: false,
             login: true,

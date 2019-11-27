@@ -14,6 +14,7 @@ const {
 
 router.get('/getList', (req, res) => getList(req, res))
 router.post('/update', (req, res) => update(req, res))
+router.post('/delete', (req, res) => deleteR(req, res))
 router.post('/reginstor', (req, res) => insert(req, res))
 router.post('/login', (req, res) => login(req, res))
 
