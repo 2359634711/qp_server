@@ -119,13 +119,15 @@ async function insertUser(req, res) {
 
 async function updateStatus(req, res) {
     try {
-        // if (!req.session.o_user) {
-        //     res.json({
-        //         err: true,
-        //         data: '请重新登录'
-        //     })
-        //     return
-        // }
+        console.log(req.session.userData)
+        if (!req.session.userData) {
+            res.json({
+                err: true,
+                code: -2,//login fail
+                data: '请重新登录'
+            })
+            return
+        }
         let { err, data } = await _update_status_from_id(req.body);
         res.json({
             err, data
@@ -139,13 +141,14 @@ async function updateStatus(req, res) {
 }
 async function updateReply(req, res) {
     try {
-        // if (!req.session.o_user) {
-        //     res.json({
-        //         err: true,
-        //         data: '请重新登录'
-        //     })
-        //     return
-        // }
+        if (!req.session.userData) {
+            res.json({
+                err: true,
+                code: -2,//login fail
+                data: '请重新登录'
+            })
+            return
+        }
         let { err, data } = await _update_reply_from_id(req.body);
         res.json({
             err, data
