@@ -1,1 +1,0 @@
-(this["webpackJsonpmy-app"]=this["webpackJsonpmy-app"]||[]).push([[7],{793:function(p,s,a){p.exports=a.p+"static/media/1566031890731305664.77d9406f.png"}}]);
