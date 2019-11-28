@@ -1,10 +1,10 @@
 const express = require('express')
 const compression = require('compression')
 const session = require('express-session')
-exports.serverUri = 'http://39.106.49.94:8080'
-// exports.serverUri = 'http://localhost:8080'
+// exports.serverUri = 'http://39.106.49.94:8080'
+exports.serverUri = 'http://localhost:8000'
 const app = express()
-const proxy = require('http-proxy-middleware');
+// const proxy = require('http-proxy-middleware');
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 app.use(compression())
@@ -32,11 +32,10 @@ app.use(express.static(path.join(__dirname + '/public/build')))// /img.png etc.
 //__dirname 是指当前文件的路径
 // app.use('/user/getList', proxy({target: 'http://localhost:3000', changeOrigin: true}));
 app.all('*', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
     res.header('Access-Control-Allow-Methods', '*');
     res.header('Content-Type', 'application/json;charset=utf-8');
-    res.header('Access-Control-Allow-Credentials', true);
     next()
 })
 app.use('/user', User)
@@ -65,8 +64,8 @@ app.all('*', (req, res, next) => {
         data: '请求资源不存在'
     })
 })
-app.listen(8080, () => {
-    console.log('run OK in: 8080')
+app.listen(8000, () => {
+    console.log('run OK in: 8000')
 })
 
 
